@@ -88,9 +88,10 @@ export const notificationSender = onDocumentCreated("users/{usersId}/notificatio
     const usersId = event.params?.usersId;
 
     // use the {usersId} to get the user's expoPushToken
-    const userRef = db.collection("users").doc(usersId);
+    const userRef = db.collection("users").doc(usersId).collection("private").doc(usersId);
     const userDocSnapshot = await userRef.get();
-    const expoPushToken = userDocSnapshot.data()?.expoPushToken;
+    const expoPushToken = userDocSnapshot.data()?.pushToken;
+    const message = event.data?.data() ?? {};
 
     if (expoPushToken) {
         logger.info("Sending Notification to: ", usersId, expoPushToken);
@@ -98,9 +99,9 @@ export const notificationSender = onDocumentCreated("users/{usersId}/notificatio
             {
                 to: expoPushToken,
                 sound: "default",
-                title: "CADA",
-                subtitle: "Approval Completed👍",
-                body: "The transfer will be initiated within 1-2 hours.",
+                title: "Collider",
+                subtitle: "Haz recibido una solicitud de amistad",
+                body: message.message ?? "",
                 badge: 1,
                 data: {
                     withSome: "notification",
