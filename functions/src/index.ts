@@ -17,7 +17,6 @@ const expo = new Expo();
 
 export const createCustomAzureToken = onCall(async (request) => {
     const decodedToken = jwtDecode(request.data.token) as Token;
-
     const additionalClaims = {
         tokenType: "azure",
         token: request.data.token,
@@ -29,8 +28,7 @@ export const createCustomAzureToken = onCall(async (request) => {
     // Check here if token is legitimate
     try {
         if (!decodedToken.oid) return;
-        const token = await getAuth()
-            .createCustomToken(decodedToken.oid, additionalClaims);
+        const token = await getAuth().createCustomToken(decodedToken.oid, additionalClaims);
         logger.info("Token Created for", decodedToken.upn);
         return {
             customToken: token,
@@ -39,8 +37,7 @@ export const createCustomAzureToken = onCall(async (request) => {
         };
     } catch (error) {
         // Handle error here
-        logger.error("Error while creating token for: ",
-            request.data.email, error);
+        logger.error("Error while creating token for: ", decodedToken.upn, error);
         return {
             status: "error",
             error: error,
